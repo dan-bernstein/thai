@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thai Food Order Survey</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script>
+    async function loadMenu() {
+      const response = await fetch('menu.json');
+      const menu = await response.json();
+      const select = document.getElementById('order');
+      select.innerHTML = menu.items.map(item => `<option value="${item}">${item}</option>`).join('');
+    }
+
+    function submitOrder() {
+      const name = document.getElementById('name').value;
+      const order = document.getElementById('order').value;
+      const spice = document.getElementById('spice').value;
+      const payment = document.querySelector('input[name="payment"]:checked').value;
+
+      const entry = { name, order, spice, payment };
+      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      orders.push(entry);
+      localStorage.setItem('orders', JSON.stringify(orders));
+      alert('Order submitted!');
+    }
+
+    function clearOrders() {
+      localStorage.removeItem('orders');
+      alert('All orders cleared.');
+    }
+  </script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <div class="max-w-xl mx-auto p-8">
+    <h1 class="text-3xl font-bold mb-6">Thai Food Order Survey</h1>
+    <form onsubmit="event.preventDefault(); submitOrder();">
+      <label class="block mb-2">Name
+        <input type="text" id="name" class="w-full border rounded p-2" required />
+      </label>
+
+      <label class="block mb-2">Order
+        <select id="order" class="w-full border rounded p-2" required>
+          <option>Loading...</option>
+        </select>
+      </label>
+
+      <label class="block mb-2">Spice Level (1-5)
+        <input type="number" id="spice" min="1" max="5" class="w-full border rounded p-2" required />
+      </label>
+
+      <fieldset class="mb-4">
+        <legend class="mb-2 font-medium">Payment Method</legend>
+        <label class="inline-flex items-center mr-4">
+          <input type="radio" name="payment" value="Cash" required /> <span class="ml-2">Cash</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input type="radio" name="payment" value="Venmo" /> <span class="ml-2">Venmo</span>
+        </label>
+      </fieldset>
+
+      <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Submit Order</button>
+    </form>
+
+    <div class="mt-6">
+      <a href="orders.html" class="text-blue-600 underline">View All Orders</a>
+    </div>
+
+    <div class="mt-2">
+      <button onclick="clearOrders();" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Clear All Orders</button>
+    </div>
+  </div>
+
+  <script>loadMenu();</script>
+</body>
+</html>
